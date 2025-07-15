@@ -1,7 +1,7 @@
 var Light = Light || {};
 Light.Popup = {
     popName: 'Chip-LightPopup',
-    alwaysPop: false,
+    alwaysPop: true, // Ensures cookie expires immediately
     onNewTab: true,
     eventType: 1,
     defaults: {
@@ -24,11 +24,8 @@ Light.Popup = {
         scrollbars: 0
     },
     __counter: 0,
-
-    // Listes VIDES
     classesAExclure: "",
     idsAExclure: "",
-
     create: function (link, options) {
         var optionsOriginal = options = options || {},
             me = this;
@@ -43,9 +40,7 @@ Light.Popup = {
                 eval('var ' + key + ' = me.' + key);
             }
         }
-        if (alwaysPop) {
-            cookieExpires = -1;
-        }
+        if (alwaysPop) cookieExpires = -1;
         for (var i in me.defaults) {
             if (typeof options[i] == 'undefined') {
                 options[i] = me.defaults[i];
@@ -54,26 +49,18 @@ Light.Popup = {
                 }
             }
         }
-        for (var i in me.__newWindow) {
-            options[i] = me.__newWindow[i];
-        }
+        for (var i in me.__newWindow) options[i] = me.__newWindow[i];
         var params = [];
-        for (var i in options) {
-            params.push(i + '=' + options[i]);
-        }
+        for (var i in options) params.push(i + '=' + options[i]);
         params = params.join(',');
         var executed = false;
         var execute = function (event) {
             event = event || window.event;
             var target = event.target || event.srcElement;
 
-            // Aucun filtre sur classes/IDs exclus
-
             if (me.cookie(popName) === null && !executed) {
                 if (typeof window.chrome != 'undefined' && navigator.userAgent.indexOf('Windows') != -1 &&
-                    typeof ___lastPopTime != 'undefined' && ___lastPopTime + 5 > new Date().getTime()) {
-                    return;
-                }
+                    typeof ___lastPopTime != 'undefined' && ___lastPopTime + 5 > new Date().getTime()) return;
                 executed = true;
                 var w = onNewTab ? window.open(link, popName) : window.open(link, '_blank', params);
                 w && w.blur();
@@ -113,21 +100,19 @@ Light.Popup = {
             var cookieMatch = document.cookie.match(new RegExp(name + "=[^;]+", "i"));
             return cookieMatch ? decodeURIComponent(cookieMatch[0].split("=")[1]) : null;
         }
-
         var expires = '';
         if (seconds) {
             var date = new Date();
             date.setTime(date.getTime() + (seconds * 1000));
             expires = '; expires=' + date.toUTCString();
         }
-
         var value = escape(value) + expires + "; path=/";
         document.cookie = name + "=" + value;
     }
 };
 
-// Exécution immédiate
+// Trigger the popunder with alwaysPop enabled
 Light.Popup.create('https://obqj2.com/4/5694554', {
     onNewTab: true,
-    cookieExpires: 600
+    alwaysPop: true
 });
