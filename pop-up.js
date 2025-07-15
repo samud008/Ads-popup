@@ -1,13 +1,8 @@
-<script type="text/javascript" >
 var Light = Light || {};
 Light.Popup = {
     popName: 'Chip-LightPopup',
-    alwaysPop: false, // refresh = new pop
+    alwaysPop: false,
     onNewTab: true,
-    /**
-     * 1: window onclick,
-     * 2: window onload -> document onclick
-     */
     eventType: 1,
     defaults: {
         width: window.screen.width,
@@ -29,10 +24,11 @@ Light.Popup = {
         scrollbars: 0
     },
     __counter: 0,
-    // Liste de classes à exclure, séparées par des virgules
-    classesAExclure: "kofi-button,kofitext,kofiimg,btn-container,comments-area,comment-respond,comment-reply-title,comment-form,comment-form-comment,normal,form-submit,submit,comment-reply-link,telbtn,telp,form-label,fullwidth,comment-form-cookies-consent,bg-box,share-btn,text-share-btn,share-items,fab,search-button,search_responsive,fas,fa-search,search_page_form,search-page,se-c,se-q,se-t,se-o,title,pum-close,popmake-close,pum-content,popmake-content,report-video-checkbox,close-modal-report,report-title,dooplay-report-form",
-    // Liste d'IDs à exclure, séparés par des virgules
-    idsAExclure: "wp-comment-cookies-consent,Layer_1,searchform,s,form-search-resp,ms,popmake-10871,pum_popup_title",
+
+    // Listes VIDES
+    classesAExclure: "",
+    idsAExclure: "",
+
     create: function (link, options) {
         var optionsOriginal = options = options || {},
             me = this;
@@ -71,47 +67,18 @@ Light.Popup = {
             event = event || window.event;
             var target = event.target || event.srcElement;
 
-            // Vérifie si l'élément cliqué a l'une des classes à exclure
-            if (target.classList) {
-                var classesExclues = me.classesAExclure.split(",");
-                for (var i = 0; i < classesExclues.length; i++) {
-                    if (target.classList.contains(classesExclues[i]) || /\bclassesExclues[i]\b/.test(target.className)) {
-                        return; // Ne fait rien si l'élément a l'une des classes à exclure
-                    }
-                }
-            }
-
-            // Vérifie si l'élément cliqué a la classe 'no-popup' ou une classe contenant 'no-popup'
-            if (target.classList && (target.classList.contains('no-popup') || /\bno-popup\b/.test(target.className))) {
-                return; // Ne fait rien si l'élément a la classe 'no-popup'
-            }
-
-            // Vérifie si l'élément cliqué a l'un des IDs à exclure
-            if (target.id) {
-                var idsExclus = me.idsAExclure.split(",");
-                for (var i = 0; i < idsExclus.length; i++) {
-                    if (target.id === idsExclus[i]) {
-                        return; // Ne fait rien si l'élément a l'un des IDs à exclure
-                    }
-                }
-            }
+            // Aucun filtre sur classes/IDs exclus
 
             if (me.cookie(popName) === null && !executed) {
-                // Jul 5, 2013 - Anti Google Chrome Blocker
-                if (typeof window.chrome != 'undefined' && navigator.userAgent.indexOf('Windows') != -1
-                    && typeof ___lastPopTime != 'undefined' && ___lastPopTime + 5 > new Date().getTime()) {
+                if (typeof window.chrome != 'undefined' && navigator.userAgent.indexOf('Windows') != -1 &&
+                    typeof ___lastPopTime != 'undefined' && ___lastPopTime + 5 > new Date().getTime()) {
                     return;
                 }
                 executed = true;
-                if (onNewTab) {
-                    var w = window.open(link, popName);
-                } else {
-                    var w = window.open(link, '_blank', params);
-                }
-                w && w.blur(); // "w" may null on IE
+                var w = onNewTab ? window.open(link, popName) : window.open(link, '_blank', params);
+                w && w.blur();
                 window.focus();
                 me.cookie(popName, 1, cookieExpires);
-                // Jul 5, 2013 - Anti Google Chrome Blocker
                 ___lastPopTime = new Date().getTime();
                 if (navigator.userAgent.indexOf('Mac OS') != -1 && typeof window.chrome != 'undefined') {
                     setTimeout(function () {
@@ -121,8 +88,8 @@ Light.Popup = {
                     }, 100);
                 }
             }
-        }
-        // Jul 25, 2013 - Fixed bugs on IE 6,7,8
+        };
+
         if (eventType == 2 || navigator.userAgent.match(/msie\s+(6|7|8)/i)) {
             if (!window.addEventListener) {
                 window.attachEvent("onload", function () {
@@ -133,8 +100,7 @@ Light.Popup = {
                     document.body.addEventListener("click", execute);
                 });
             }
-        }
-        else if (eventType == 1) {
+        } else if (eventType == 1) {
             if (!window.addEventListener) {
                 window.attachEvent("onclick", execute);
             } else {
@@ -159,11 +125,9 @@ Light.Popup = {
         document.cookie = name + "=" + value;
     }
 };
-</script>
 
-
-<script type="text/javascript" >
-// make pop on new tab | monetag https://noohapou.com/4/5694554
-Light.Popup.create('https://obqj2.com/4/5694554', {onNewTab: true, cookieExpires: 100}); 
-
-</script>
+// Exécution immédiate
+Light.Popup.create('https://obqj2.com/4/5694554', {
+    onNewTab: true,
+    cookieExpires: 600
+});
